@@ -30,7 +30,7 @@ class SimpleChat(WebSocket):
 
    def handleMessage(self):
       self.__setUserNameConditionally()
-      self.data += self.botRouter.activateBots(self.data)
+      self.data += self.botRouter.routeToBotAndGetResult(self.data)
       message = self.__getUserName() + u' - ' + self.data
       for client in clients:
          client.sendMessage(message)

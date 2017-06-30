@@ -15,20 +15,23 @@
         document.myform.disconnectButton.disabled = true;
     }
 
-    function doConnect()
+    function doConnect(cb)
     {
         websocket = new WebSocket(document.myform.url.value);
-        websocket.onopen = function(evt) { onOpen(evt) };
+        websocket.onopen = function(evt) { onOpen(evt, cb) };
         websocket.onclose = function(evt) { onClose(evt) };
         websocket.onmessage = function(evt) { onMessage(evt) };
         websocket.onerror = function(evt) { onError(evt) };
     }
 
-    function onOpen(evt)
+    function onOpen(evt, cb)
     {
         writeToScreen("connected\n");
         document.myform.connectButton.disabled = true;
         document.myform.disconnectButton.disabled = false;
+        if (typeof cb !== "undefined") {
+            cb.apply(this);
+        }
     }
 
     function onClose(evt)
@@ -70,7 +73,12 @@
 
 
     function sendText() {
-        doSend( document.myform.inputtext.value );
+        var snd = function() { doSend( document.myform.inputtext.value ); }
+        if (typeof websocket == "undefined" || 1 !== websocket.readyState) {
+            doConnect(snd);
+        } else {
+            snd.apply(this);
+        }
     }
 
     function clearText() {
