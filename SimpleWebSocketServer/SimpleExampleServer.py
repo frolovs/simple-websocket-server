@@ -6,6 +6,7 @@ Copyright (c) 2013 Dave P.
 import signal
 import sys
 import ssl
+from BotRouter import BotRouter
 from SimpleWebSocketServer import WebSocket, SimpleWebSocketServer, SimpleSSLWebSocketServer
 from optparse import OptionParser
 
@@ -23,10 +24,16 @@ class SimpleEcho(WebSocket):
 clients = []
 class SimpleChat(WebSocket):
 
+   def __init__(self, server, sock, address):
+      WebSocket.__init__(self, server, sock, address)
+      self.botRouter = BotRouter()
+
    def handleMessage(self):
+      self.__setUserNameConditionally()
+      self.data += self.botRouter.activateBots(self.data)
+      message = self.__getUserName() + u' - ' + self.data
       for client in clients:
-         if client != self:
-            client.sendMessage(self.address[0] + u' - ' + self.data)
+         client.sendMessage(message)
 
    def handleConnected(self):
       print (self.address, 'connected')
@@ -40,6 +47,15 @@ class SimpleChat(WebSocket):
       for client in clients:
          client.sendMessage(self.address[0] + u' - disconnected')
 
+   def __setUserNameConditionally(self):
+      if self.data.startswith(u'/name:') and not hasattr(self, 'user_name'):
+         self.user_name = self.data.replace(u'/name:', '')
+
+   def __getUserName(self):
+      if hasattr(self, 'user_name'):
+         return self.user_name
+      else:
+         return self.address[0] + u':' + str(self.address[1])
 
 if __name__ == "__main__":
 

@@ -19,6 +19,7 @@ import socket
 import struct
 import ssl
 import errno
+import traceback
 import codecs
 from collections import deque
 from select import select
@@ -656,6 +657,7 @@ class SimpleWebSocketServer(object):
             try:
                client._handleData()
             except Exception as n:
+               traceback.print_exc()
                self._handleClose(client)
                del self.connections[ready]
                self.listeners.remove(ready)
