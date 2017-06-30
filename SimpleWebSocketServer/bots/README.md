@@ -1,4 +1,4 @@
-# IB sandbox with bots <br>learning TDD is fun
+# Chat sandbox with bots <br>learning TDD is fun
  
 ## What is it?
 This is a simple/sample chat server which uses websockets transport.
