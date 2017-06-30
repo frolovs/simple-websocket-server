@@ -7,6 +7,8 @@ The chat server can be extended with  bots.
 
 Bots are located in ```bots``` directory.
 
+![Bots chat example](ib_bots.png?raw=true "Chat example")
+
 ## How to start server
 run 
 ```bash
